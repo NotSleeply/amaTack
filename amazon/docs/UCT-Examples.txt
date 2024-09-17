@@ -1,0 +1,100 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+	"tamazon/amazon"
+
+	"github.com/tongque0/gotack"
+)
+
+const INF = 0x3f3f3f3f
+
+var (
+	line  string
+	step  int
+	board *amazon.AmazonBoard
+	color int
+)
+
+func main() {
+	sc := bufio.NewScanner(os.Stdin)
+	for sc.Scan() {
+		line = sc.Text()
+		if line == "name?" {
+			fmt.Println("name Tack-Amazon")
+		} else if line == "quit" {
+			os.Exit(0)
+		} else if strings.HasPrefix(line, "new") {
+			step = 1
+			words := strings.Split(line, " ")
+			board = amazon.NewBoard()
+			if words[1] == "black" {
+				color = amazon.Black
+				runSearch()
+			} else {
+				color = amazon.White
+			}
+		} else if strings.HasPrefix(line, "move") {
+			words := strings.Split(line, " ")
+			move := words[1]
+			board[move[3]-'A'][move[2]-'A'] = board[move[1]-'A'][move[0]-'A']
+			board[move[1]-'A'][move[0]-'A'] = amazon.Empty
+			board[move[5]-'A'][move[4]-'A'] = amazon.Arrow
+			step++
+			if !board.IsGameOver() {
+				runSearch()
+			}
+		} else if line == "end" {
+			continue
+		} else {
+			continue
+		}
+	}
+}
+func runSearch() {
+	var IsMaxPlayer = true
+	var e *gotack.Evaluator
+	if color == 2 {
+		IsMaxPlayer = false
+	}
+	// 根据步数动态设置时间限制
+	var timeLimit int
+	switch {
+	case step < 10:
+		timeLimit = 35
+	case step < 20:
+		timeLimit = 27
+	case step < 30:
+		timeLimit = 19
+	default:
+		timeLimit = 5
+	}
+
+	// 创建评估器
+	e = gotack.NewEvaluator(
+		gotack.UCT,
+		gotack.NewEvaluatorOptions(
+			gotack.WithBoard(board),
+			gotack.WithIsMaxPlayer(IsMaxPlayer),
+			gotack.WithStep(step),
+			gotack.WithIsDetail(true),
+			gotack.WithExtra("SimThresh", 40),      // 延迟扩展，模拟次数达到40时扩展
+			gotack.WithExtra("AheadStep", 6),       //提前评估6步
+			gotack.WithExtra("ExpandThresh", 1000), //节点访问次数每多1000次扩展一次
+			gotack.WithExtra("ExpandStep", 5),      //每次扩展5个位置
+			gotack.WithExtra("ExpandTopN", 250),    //最大扩展250个位置
+			gotack.WithTimeLimit(timeLimit),
+		),
+	)
+	move := e.GetBestMove()
+	m, ok := move[0].(amazon.AmazonMove)
+	if !ok {
+		return
+	}
+	board.Move(move[0])
+	fmt.Printf("move %c%c%c%c%c%c\n", m.From.Y+'A', m.From.X+'A', m.To.Y+'A', m.To.X+'A', m.Put.Y+'A', m.Put.X+'A')
+	step++
+}
