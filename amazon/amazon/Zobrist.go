@@ -1,3 +1,4 @@
+// 实现Zobrist哈希，用于快速比较和存储棋盘状态。
 package amazon
 
 import (

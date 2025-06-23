@@ -1,3 +1,4 @@
+// 记录和保存游戏的移动记录。
 package amazon
 
 import (

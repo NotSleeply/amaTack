@@ -1,3 +1,4 @@
+// 实现具体的评估逻辑，用于计算棋盘的评分。
 package amazon
 
 import "math"

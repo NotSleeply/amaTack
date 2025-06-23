@@ -1,3 +1,4 @@
+// 定义游戏的核心数据结构和基本操作。
 package amazon
 
 import (
@@ -27,11 +28,13 @@ var (
 	}
 )
 
+// 棋子的位置
 type Position struct {
 	X int
 	Y int
 }
 
+// 一次完整的移动，包括起点、终点和放置箭的位置。
 type AmazonMove struct {
 	From Position
 	To   Position
@@ -40,6 +43,7 @@ type AmazonMove struct {
 
 type AmazonBoard [10][10]int
 
+// 初始化新的棋盘。
 func NewBoard() *AmazonBoard {
 	board := &AmazonBoard{}
 
