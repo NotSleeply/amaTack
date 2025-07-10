@@ -1,4 +1,151 @@
-
 # Go workspace file
 go.work
 go.work.sum
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/vendor/
+/bin/
+/dist/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+.history/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+/coverage/
+*.cover
+.coverage
+coverage.txt
+
+# Build outputs
+/build/
+
+# Dependency directories (if not using go modules with vendor)
+node_modules/
+jspm_packages/
+bower_components/
+
+# Temporary files
+tmp/
+temp/
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.pytype/
+pyrightconfig.json
+
+# Virtual environments
+**/venv/
+**/env/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+.venv
+.env
+.python-version
+pyvenv.cfg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Pytest
+.pytest_cache/
+
+# Flask
+instance/
+.webassets-cache
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Scrapy
+.scrapy

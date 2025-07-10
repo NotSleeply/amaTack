@@ -1,0 +1,5 @@
+.nogo_record_*.txt
+.vscode/
+.idea/
+*/**/nogo_record_*.txt
+*/**/先手队名 vs 后手队名-先后手胜_*.txt
