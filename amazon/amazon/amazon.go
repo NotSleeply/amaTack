@@ -9,12 +9,13 @@ import (
 )
 
 const (
-	Empty = iota
-	Black
-	White
-	Arrow
+	Empty = iota // 值为0，表示空位  使用 iota 自动递增生成常量值：
+	Black        // 值为1，表示黑方棋子
+	White        // 值为2，表示白方棋子
+	Arrow        // 值为3，表示障碍
 )
 
+// 方向数组 左上、上、右上、右、右下、下、左下、左
 var (
 	dir = [8][2]int{
 		{-1, -1},
@@ -41,18 +42,20 @@ type AmazonMove struct {
 	Put  Position
 }
 
+// 定义了一个10x10的棋盘，使用二维数组表示棋盘状态。
 type AmazonBoard [10][10]int
 
 // 初始化新的棋盘。
 func NewBoard() *AmazonBoard {
 	board := &AmazonBoard{}
 
-	// 初始化棋盘，例如设置棋子的初始位置
+	// 初始化棋盘，设置棋子的初始位置
+	// 白棋 位置
 	board[0][3] = White
 	board[0][6] = White
 	board[3][0] = White
 	board[3][9] = White
-
+	// 黑棋 位置
 	board[6][0] = Black
 	board[6][9] = Black
 	board[9][3] = Black
@@ -61,6 +64,13 @@ func NewBoard() *AmazonBoard {
 	return board
 }
 
+/*
+* 打印棋盘状态
+* 空位显示为 "."
+* 黑棋显示为 "B"
+* 白棋显示为 "W"
+* 障碍显示为 "X"
+ */
 func (b *AmazonBoard) Print() {
 	for i := 0; i < len(*b); i++ {
 		for j := 0; j < len((*b)[i]); j++ {
@@ -78,6 +88,8 @@ func (b *AmazonBoard) Print() {
 		fmt.Println()
 	}
 }
+
+// 打印移动信息
 func (m AmazonMove) String() string {
 	return fmt.Sprintf("From (%d,%d)\tTo (%d,%d)\tPut (%d,%d)\n", m.From.X, m.From.Y, m.To.X, m.To.Y, m.Put.X, m.Put.Y)
 }
@@ -101,6 +113,13 @@ func (b *AmazonBoard) PrintMoveBoard() {
 	}
 }
 
+/*
+* 生成所有合法移动
+* 根据当前玩家确定棋子颜色
+* 找出该颜色的所有棋子
+* 为每个棋子并发生成所有可能的移动
+* 收集并返回所有合法移动
+ */
 func (b *AmazonBoard) GetAllMoves(IsMaxPlayer bool) []gotack.Move {
 	var moves []gotack.Move
 	var color = 1
@@ -116,33 +135,13 @@ func (b *AmazonBoard) GetAllMoves(IsMaxPlayer bool) []gotack.Move {
 	// 使用等待组，以便等待所有并发协程完成
 	var wg sync.WaitGroup
 
-	// 遍历所有棋子
+	// 遍历所有棋子  核心
 	for _, chess := range allChess {
 		// 启动并发协程，为每个棋子生成合法移动
 		wg.Add(1)
 		go func(chess Position) {
 			defer wg.Done()
-			for j := 0; j < 8; j++ {
-				x, y := chess.X+dir[j][0], chess.Y+dir[j][1]
-				for b.legal(x, y) && (*b)[x][y] == Empty {
-					for k := 0; k < 8; k++ {
-						ax, ay := x+dir[k][0], y+dir[k][1]
-						for b.legal(ax, ay) && ((*b)[ax][ay] == Empty || ax == chess.X && ay == chess.Y) {
-							// 创建合法移动对象，并发送到通道中
-							move := AmazonMove{
-								From: Position{X: chess.X, Y: chess.Y},
-								To:   Position{X: x, Y: y},
-								Put:  Position{X: ax, Y: ay},
-							}
-							moveChan <- move
-							ax += dir[k][0]
-							ay += dir[k][1]
-						}
-					}
-					x += dir[j][0]
-					y += dir[j][1]
-				}
-			}
+			b.generateMovesForChess(chess, moveChan)
 		}(chess)
 	}
 
@@ -160,6 +159,7 @@ func (b *AmazonBoard) GetAllMoves(IsMaxPlayer bool) []gotack.Move {
 	return moves
 }
 
+// 执行移动操作
 func (b *AmazonBoard) Move(move gotack.Move) {
 	m, ok := move.(AmazonMove)
 	if !ok {
@@ -167,24 +167,26 @@ func (b *AmazonBoard) Move(move gotack.Move) {
 		return
 	}
 
-	b[m.To.X][m.To.Y] = b[m.From.X][m.From.Y]
-	b[m.From.X][m.From.Y] = Empty
-	b[m.Put.X][m.Put.Y] = Arrow
+	b[m.To.X][m.To.Y] = b[m.From.X][m.From.Y] // 移动棋子
+	b[m.From.X][m.From.Y] = Empty             // 清空原位置
+	b[m.Put.X][m.Put.Y] = Arrow               // 放置障碍
 }
 
+// 撤销移动操作
 func (b *AmazonBoard) UndoMove(move gotack.Move) {
 	m, ok := move.(AmazonMove)
 	if !ok {
 		fmt.Println("Invalid move type")
 		return
 	}
-	b[m.From.X][m.From.Y] = b[m.To.X][m.To.Y]
-	b[m.To.X][m.To.Y] = Empty
+	b[m.From.X][m.From.Y] = b[m.To.X][m.To.Y] // 恢复棋子位置
+	b[m.To.X][m.To.Y] = Empty                 // 清空移动后位置
 	if b[m.From.X] != b[m.Put.X] || b[m.From.Y] != b[m.Put.Y] {
-		b[m.Put.X][m.Put.Y] = Empty
+		b[m.Put.X][m.Put.Y] = Empty // 移除障碍
 	}
 }
 
+// 检查游戏是否结束
 func (b *AmazonBoard) IsGameOver() bool {
 	// 检查黑方是否还有合法的移动
 	blackMoves := b.GetAllMoves(true) // 假设true代表黑方
@@ -194,15 +196,17 @@ func (b *AmazonBoard) IsGameOver() bool {
 
 	// 检查白方是否还有合法的移动
 	whiteMoves := b.GetAllMoves(false) // 假设false代表白方
-	// 直接返回白方移动列表长度是否为0的结果
 
+	// 直接返回白方移动列表长度是否为0的结果
 	return len(whiteMoves) == 0
 }
 
+// 检查位置是否合法
 func (b *AmazonBoard) legal(x, y int) bool {
 	return x >= 0 && y >= 0 && x < 10 && y < 10
 }
 
+// 获取指定颜色的所有棋子位置
 func (b *AmazonBoard) getAllChess(color int) []Position {
 	var positions []Position
 	for i := 0; i < 10; i++ {
@@ -214,9 +218,45 @@ func (b *AmazonBoard) getAllChess(color int) []Position {
 	}
 	return positions
 }
+
+// 为单个棋子生成所有合法移动
+func (b *AmazonBoard) generateMovesForChess(chess Position, moveChan chan AmazonMove) {
+	// 遍历所有方向
+	for j := 0; j < 8; j++ {
+		// 初始方向
+		x, y := chess.X+dir[j][0], chess.Y+dir[j][1]
+		// 沿着当前方向一直移动，直到碰到边界或非空位置
+		for b.legal(x, y) && (*b)[x][y] == Empty {
+			// 从当前位置，遍历8个方向放置障碍箭
+			for k := 0; k < 8; k++ {
+				ax, ay := x+dir[k][0], y+dir[k][1]
+				// 沿着当前方向一直移动，寻找可放置箭的位置
+				for b.legal(ax, ay) && ((*b)[ax][ay] == Empty || ax == chess.X && ay == chess.Y) {
+					// 创建合法移动对象，并发送到通道中
+					move := AmazonMove{
+						From: Position{X: chess.X, Y: chess.Y},
+						To:   Position{X: x, Y: y},
+						Put:  Position{X: ax, Y: ay},
+					}
+					moveChan <- move
+					// 继续沿着当前方向
+					ax += dir[k][0]
+					ay += dir[k][1]
+				}
+			}
+			// 继续沿原方向移动棋子
+			x += dir[j][0]
+			y += dir[j][1]
+		}
+	}
+}
+
+// 评估函数接口
 func (b *AmazonBoard) EvaluateFunc(opts gotack.EvalOptions) float64 {
 	return EvaluateFunc(&opts)
 }
+
+// 计算当前棋盘的哈希值 用于检测重复局面。
 func (b *AmazonBoard) Hash() uint64 {
 	var hash uint64 = 0
 	for i := 0; i < 10; i++ {
@@ -228,7 +268,7 @@ func (b *AmazonBoard) Hash() uint64 {
 	return hash
 }
 
-// Clone 创建并返回当前棋盘的一个副本
+// 克隆棋盘
 func (b *AmazonBoard) Clone() gotack.Board {
 	clone := AmazonBoard{} // 创建一个新的 AmazonBoard 实例
 

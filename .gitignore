@@ -3,15 +3,12 @@ go.work
 go.work.sum
 
 # Go specific
-*.exe
-*.exe~
 *.dll
 *.so
 *.dylib
 *.test
 *.out
 /vendor/
-/bin/
 /dist/
 
 # macOS
