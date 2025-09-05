@@ -1,60 +1,25 @@
+# gotack-examples-amazon
 
-# gotack-examples
+## 亚马逊棋程序
 
-欢迎来到 gotack 包的示例仓库！本仓库包含了辽宁科技大学部分棋种计算机博弈的实现示例，适用于研究和教学目的。
+- bin目录下有四个可执行程序
+- Qtack2.0为在gotack1.2架构下的新版亚马逊棋，快速版，搜索深度为2跳3
+- Stack2.0为在gotack1.2架构下的新版亚马逊棋，慢速版本，搜索深度为2跳4
+- ZhangT1.0为学长版本亚马逊棋
+- ZhangT1.0为学长版本亚马逊棋
 
-## 项目概述
+## 启动
 
-gotack-examples 旨在提供一个参考框架，帮助研究人员和开发者快速入门棋类博弈算法的开发和实验。目前，本仓库涵盖以下棋种的实现：
+- 安装模块 `go get github.com/tongque0/gotack`
+- 启动 `make run`
+- 构建 `make build`
 
-- 点格棋（采用机器学习+UCT算法）
-- 亚马逊棋（采用简单的 Alpha-Beta 剪枝算法）
-- 不围棋（基于价值评估的递归算法）
+>此项启动用于调试，正常使用需要build后，载入棋盘UI中。
 
-## 快速启动
+## 了解项目结构
 
-如果没有安装 CMake，可以手动进入 `ui` 目录并启动可执行文件 `SAU Game Platform.exe`：
-
-### 亚马逊棋
-
-1. 克隆仓库到本地：
-   ```
-   git clone https://example.com/gotack-examples.git
-   cd gotack-examples
-   ```
-2. 编译并启动 UI：
-   ```
-   make ui
-   ```
-3. 加载 `amazon/bin` 目录下的引擎开始博弈。
-
-### 不围棋
-
-1. 克隆仓库到本地：
-   ```
-   git clone https://example.com/gotack-examples.git
-   cd gotack-examples
-   ```
-2. 编译并启动 UI：
-   ```
-   make ui
-   ```
-3. 加载 `nogo/bin` 目录下的引擎开始博弈。
-
-## 技术栈
-
-本项目主要使用以下技术实现：
-
-- 机器学习
-- UCT算法
-- Alpha-Beta 剪枝
-- 递归算法
-
-
-## 许可
-
-该项目采用 [MIT 许可证](LICENSE)。
-
-# UI
-
-- UI文件中为棋谱
+- main.go - 程序入口，处理用户输入和游戏流程；根据UI中的通信引擎协议所编写
+- amazon.go - 定义亚马逊棋的核心数据结构和基本操作
+- value.go - 实现评估函数逻辑
+- record.go - 处理游戏记录
+- Zobrist.go - 实现 Zobrist 哈希（用于棋盘状态比较）
