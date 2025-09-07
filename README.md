@@ -23,3 +23,7 @@
 - value.go - 实现评估函数逻辑
 - record.go - 处理游戏记录
 - Zobrist.go - 实现 Zobrist 哈希（用于棋盘状态比较）
+
+# 荣获奖状
+
+![image-20250907213554579](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20250907213554579.png)
