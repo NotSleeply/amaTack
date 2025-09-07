@@ -26,4 +26,4 @@
 
 # 荣获奖状
 
-![image-20250907213554579](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20250907213554579.png)
+![image-20250907213554579](./docs/亚马逊棋省er.png)
