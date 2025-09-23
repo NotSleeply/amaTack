@@ -1,4 +1,4 @@
-# gotack-amazon
+# amatack - 贪吃
 
 ## 项目简介
 
