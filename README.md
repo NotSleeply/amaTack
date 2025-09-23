@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-本项目为亚马逊棋博弈程序。程序支持标准通信协议，可与SAU Game Platform等平台对接，具备较强的对弈水平和工程可读性。
+本项目为亚马逊棋博弈程序。程序可与**SAU Game Platform**平台对接，具备较强的对弈水平和工程可读性。
 
 ## 功能亮点
 
@@ -41,8 +41,9 @@
 
 ## 参考与致谢
 
+- 特别感谢 [tongque0](https://github.com/tongque0)!
 - 算法细节与优化思路详见 [`docs/亚马逊冠军棋.md`](docs/亚马逊冠军棋.md)
-- 代码参考 [gotack](https://github.com/tongque0/gotack) 项目
+- 代码参考 [gotack](https://github.com/tongque0/gotack) 亚马逊棋项目
 
 ## 获奖证书
 
